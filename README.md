@@ -1,5 +1,7 @@
 # trabalho-gb-pg
 
+- Brunno Zonatto, Guilherme Rabelo
+
 # intalar bibliotecas
 
 - pip install tk
