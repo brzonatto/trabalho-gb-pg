@@ -4,6 +4,12 @@ import numpy as np
 
 selectedSticker = 0
 out = 0
+fecharCamera = False
+capturouCamera = False
+
+img_counter = 0
+
+cap = cv2.VideoCapture(0)
 
 patchImg = 'user.png'
 
@@ -13,7 +19,10 @@ stickerStar = cv2.imread('star.png', cv2.IMREAD_UNCHANGED)
 stickerHeart = cv2.imread('heart.png', cv2.IMREAD_UNCHANGED)
 stickerLightning = cv2.imread('lightning.png', cv2.IMREAD_UNCHANGED)
 stickerSmile = cv2.imread('smile.png', cv2.IMREAD_UNCHANGED)
+webCamIcon = cv2.imread('webcam.png', cv2.IMREAD_UNCHANGED)
 userImage = cv2.imread(patchImg, cv2.IMREAD_UNCHANGED)
+capturar = cv2.imread('capturar.png', cv2.IMREAD_UNCHANGED)
+fechar = cv2.imread('fechar.png', cv2.IMREAD_UNCHANGED)
 
 resizedfilteredImageOriginal = cv2.resize(userImage, (75, 75), interpolation = cv2.INTER_AREA)
 
@@ -34,6 +43,8 @@ def grayScaleFilter(image):
 filteredImage = grayScaleFilter(userImage)
 
 resizedfilteredImageGrayScale = cv2.resize(filteredImage, (75, 75), interpolation = cv2.INTER_AREA)
+
+resizeWebCamIcon = cv2.resize(webCamIcon, (40, 40), interpolation = cv2.INTER_AREA)
 
 
 
@@ -132,17 +143,28 @@ def mouse_click(event, x, y, flags, param):
         elif x > 643 and x < 718 and y > 690 and y < 765: 
             grayScaleFilter(resizedUserImage)
             out = overlay(out, resizedUserImage, 130, 110)
+        elif x > 739 and x < 780 and y > 708 and y < 752:
+            showCamera()
         cv2.imshow('TrabalhoGB', out)
     
     # print(x, ',', y)
     
-
+def mouse_click_camera(event, x, y, flags, param):   
+    global fecharCamera, capturouCamera
+    if event == cv2.EVENT_LBUTTONDOWN:
+        if x >= 487 and x <= 559 and y >= 7 and y <= 38:
+            capturouCamera = True
+        elif x >= 563 and x <= 634 and y >= 7 and y <= 38:
+            fecharCamera = True
+    # print(x, ',', y)
+      
 out = overlay(background, stickerGlasses, 230, 5)
 out = overlay(out, stickerStar, 330, 5)
 out = overlay(out, stickerLightning, 430, 5)
 out = overlay(out, stickerHeart, 530, 5)
 out = overlay(out, stickerSmile, 630, 5)
 out = overlay(out, resizedUserImage, 130, 110)
+out = overlay(out, resizeWebCamIcon, 740, 710)
 
 out = overlay(out, resizedfilteredImageOriginal, 83, 690)
 
@@ -168,6 +190,36 @@ out = overlay(out, box, 563, 690)
 out = overlay(out, resizedfilteredImageGrayScale, 643, 690)
 
 out = cv2.putText(out, 'Stickers', (80, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
+
+
+def showCamera():
+    global cap, fecharCamera, capturouCamera, patchImg, out, userImage
+    fecharCamera = False
+    while True:
+        ret, frame = cap.read()
+
+        frame = cv2.resize(frame, (640, 480), interpolation = cv2.INTER_AREA)
+        frame = cvzone.overlayPNG(frame, fechar, [565, 10])
+        frame = cvzone.overlayPNG(frame, capturar, [490, 10])
+        cv2.imshow('Camera', frame)
+        cv2.setMouseCallback('Camera', mouse_click_camera)
+        
+        cv2.waitKey(1)
+
+        if capturouCamera:
+            cv2.imwrite('cameraCapture.png', frame)
+            patchImg = 'cameraCapture.png'
+            capturouCamera = False            
+
+        if fecharCamera:
+            break
+
+    cv2.destroyWindow('Camera')
+
+
+
+
+
 
 
 cv2.imshow('TrabalhoGB', out)
