@@ -242,7 +242,6 @@ def reRender(pathImage):
     out = cv2.putText(out, 'Stickers', (80, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
     cv2.imshow('TrabalhoGB', out)
 
-
 def showCamera():
     global cap, fecharCamera, capturouCamera, pathImg, out, userImage
     fecharCamera = False
@@ -258,7 +257,8 @@ def showCamera():
         cv2.waitKey(1)
 
         if capturouCamera:
-            cv2.imwrite('cameraCapture.png', frame)
+            rgba = cv2.cvtColor(frame, cv2.COLOR_RGB2RGBA)
+            cv2.imwrite('cameraCapture.png', rgba)
             reRender('cameraCapture.png')
             capturouCamera = False
         if fecharCamera:
